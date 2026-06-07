@@ -100,7 +100,7 @@ FROM --platform=$BUILDPLATFORM ghcr.io/troibe/neo5/node:riscv64-node25-trixie-sl
 WORKDIR /src
 COPY ["ui/package.json", "ui/pnpm-lock.yaml", "./"]
 
-RUN corepack enable && pnpm install --frozen-lockfile
+RUN npm install -g pnpm@10.28.1 && pnpm install --frozen-lockfile
 
 COPY ["ui/", "."]
 
