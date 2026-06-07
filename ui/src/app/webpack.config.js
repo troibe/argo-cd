@@ -23,7 +23,9 @@ const config = {
         filename: '[name].[contenthash].js',
         chunkFilename: '[name].[contenthash].chunk.js',
         path: __dirname + '/../../dist/app',
-        clean: true
+        clean: true,
+        // Avoid webpack's wasm-backed hash path on riscv64 builders.
+        hashFunction: 'sha256'
     },
     cache: { type: 'filesystem' },
 

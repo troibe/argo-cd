@@ -18,6 +18,12 @@ if [ -z "$INSTALL_OS" ]; then
     exit 1
 fi
 
+if [ "$ARCHITECTURE" = "riscv64" ]; then
+    GOBIN="$INSTALL_PATH" go install sigs.k8s.io/kustomize/kustomize/v5@v${KUSTOMIZE_VERSION}
+    "$INSTALL_PATH/kustomize" version
+    exit 0
+fi
+
 # Note that kustomize release URIs have changed for v3.2.1. Then again for
 # v3.3.0. When upgrading to versions >= v3.3.0 please change the URI format. And
 # also note that as of version v3.3.0, assets are in .tar.gz form.
