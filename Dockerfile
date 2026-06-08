@@ -131,13 +131,15 @@ ARG GIT_TAG \
     BUILD_DATE \
     GIT_TREE_STATE \
     GIT_COMMIT
-RUN GIT_COMMIT=$GIT_COMMIT \
+RUN export GOCACHE=/tmp/go-build-cache GOMODCACHE=/tmp/go-mod-cache && \
+    GIT_COMMIT=$GIT_COMMIT \
     GIT_TREE_STATE=$GIT_TREE_STATE \
     GIT_TAG=$GIT_TAG \
     BUILD_DATE=$BUILD_DATE \
     GOOS=$TARGETOS \
     GOARCH=$TARGETARCH \
-    make argocd-all
+    make argocd-all && \
+    rm -rf "$GOCACHE" "$GOMODCACHE"
 
 ####################################################################################################
 # Final image
