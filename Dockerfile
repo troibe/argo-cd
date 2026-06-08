@@ -98,7 +98,7 @@ WORKDIR /home/argocd
 FROM --platform=$BUILDPLATFORM gounthar/node-riscv64:22.22.0-trixie-slim AS argocd-ui
 
 WORKDIR /src
-COPY ["ui/package.json", "ui/pnpm-lock.yaml", "./"]
+COPY ["ui/package.json", "ui/pnpm-lock.yaml", "ui/pnpm-workspace.yaml", "./"]
 
 RUN npm install -g pnpm@10.28.1 && pnpm install --frozen-lockfile
 
