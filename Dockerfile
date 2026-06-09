@@ -93,23 +93,6 @@ USER $ARGOCD_USER_ID
 WORKDIR /home/argocd
 
 ####################################################################################################
-# Argo CD UI stage
-####################################################################################################
-FROM --platform=$BUILDPLATFORM ghcr.io/troibe/neo5/node:riscv64-node22-trixie-slim AS argocd-ui
-
-WORKDIR /src
-COPY ["ui/package.json", "ui/pnpm-lock.yaml", "ui/pnpm-workspace.yaml", "./"]
-
-RUN npm install -g pnpm@10.28.1 && pnpm install --frozen-lockfile
-
-COPY ["ui/", "."]
-
-ARG ARGO_VERSION=latest
-ENV ARGO_VERSION=$ARGO_VERSION
-ARG TARGETARCH
-RUN HOST_ARCH=$TARGETARCH NODE_ENV='production' NODE_ONLINE_ENV='online' NODE_OPTIONS=--max_old_space_size=8192 pnpm build
-
-####################################################################################################
 # Argo CD Build stage which performs the actual build of Argo CD binaries
 ####################################################################################################
 FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.26.4@sha256:68cb6d68bed024785b69195b89af7ac7a444f27791435f98647edff595aa0479 AS argocd-build
@@ -123,7 +106,14 @@ RUN go mod download
 
 # Perform the build
 COPY . .
-COPY --from=argocd-ui /src/dist/app /go/src/github.com/argoproj/argo-cd/ui/dist/app
+RUN mkdir -p /go/src/github.com/argoproj/argo-cd/ui/dist/app/assets/images/resources && \
+    printf '%s\n' \
+      '<!doctype html>' \
+      '<html lang="en">' \
+      '<head><meta charset="utf-8"><title>Argo CD UI unavailable</title></head>' \
+      '<body><h1>Argo CD UI unavailable on this riscv64 build</h1><p>This image was built without the frontend assets.</p></body>' \
+      '</html>' \
+      > /go/src/github.com/argoproj/argo-cd/ui/dist/app/index.html
 ARG TARGETOS \
     TARGETARCH
 # These build args are optional; if not specified the defaults will be taken from the Makefile
