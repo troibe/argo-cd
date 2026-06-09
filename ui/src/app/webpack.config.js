@@ -19,6 +19,8 @@ const proxyConf = {
 
 const config = {
     entry: './src/app/index.tsx',
+    // Native riscv64 Node/V8 has been unstable under webpack's default parallel work.
+    parallelism: 1,
     output: {
         filename: '[name].[contenthash].js',
         chunkFilename: '[name].[contenthash].chunk.js',
