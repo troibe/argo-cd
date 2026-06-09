@@ -95,7 +95,7 @@ WORKDIR /home/argocd
 ####################################################################################################
 # Argo CD UI stage
 ####################################################################################################
-FROM --platform=$BUILDPLATFORM gounthar/node-riscv64:22.22.0-trixie-slim AS argocd-ui
+FROM --platform=$BUILDPLATFORM ghcr.io/troibe/neo5/node:riscv64-node22-trixie-slim AS argocd-ui
 
 WORKDIR /src
 COPY ["ui/package.json", "ui/pnpm-lock.yaml", "ui/pnpm-workspace.yaml", "./"]
