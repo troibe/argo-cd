@@ -1,4 +1,5 @@
 ARG BASE_IMAGE=docker.io/library/debian:trixie-slim
+ARG UI_ASSETS_IMAGE=ghcr.io/troibe/argocd/ui-assets:latest
 ####################################################################################################
 # Builder image
 # Initial stage which pulls prepares build dependencies and CLI tooling we need for our final image
@@ -93,6 +94,11 @@ USER $ARGOCD_USER_ID
 WORKDIR /home/argocd
 
 ####################################################################################################
+# Argo CD UI assets stage
+####################################################################################################
+FROM ${UI_ASSETS_IMAGE} AS argocd-ui-assets
+
+####################################################################################################
 # Argo CD Build stage which performs the actual build of Argo CD binaries
 ####################################################################################################
 FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.26.4@sha256:68cb6d68bed024785b69195b89af7ac7a444f27791435f98647edff595aa0479 AS argocd-build
@@ -106,14 +112,7 @@ RUN go mod download
 
 # Perform the build
 COPY . .
-RUN mkdir -p /go/src/github.com/argoproj/argo-cd/ui/dist/app/assets/images/resources && \
-    printf '%s\n' \
-      '<!doctype html>' \
-      '<html lang="en">' \
-      '<head><meta charset="utf-8"><title>Argo CD UI unavailable</title></head>' \
-      '<body><h1>Argo CD UI unavailable on this riscv64 build</h1><p>This image was built without the frontend assets.</p></body>' \
-      '</html>' \
-      > /go/src/github.com/argoproj/argo-cd/ui/dist/app/index.html
+COPY --from=argocd-ui-assets /dist/app /go/src/github.com/argoproj/argo-cd/ui/dist/app
 ARG TARGETOS \
     TARGETARCH
 # These build args are optional; if not specified the defaults will be taken from the Makefile
