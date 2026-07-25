@@ -125,7 +125,15 @@ ARG GIT_TAG \
     BUILD_DATE \
     GIT_TREE_STATE \
     GIT_COMMIT
-RUN GIT_COMMIT=$GIT_COMMIT \
+RUN echo '--- git status (tracked and untracked) ---' && \
+    git status --porcelain=v1 --untracked-files=all && \
+    echo '--- unstaged diff ---' && \
+    git diff --name-status && \
+    echo '--- staged diff ---' && \
+    git diff --cached --name-status && \
+    echo '--- ignored status ---' && \
+    git status --porcelain=v1 --ignored && \
+    GIT_COMMIT=$GIT_COMMIT \
     GIT_TREE_STATE=$GIT_TREE_STATE \
     GIT_TAG=$GIT_TAG \
     BUILD_DATE=$BUILD_DATE \
