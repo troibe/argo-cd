@@ -7,6 +7,7 @@ const {codecovWebpackPlugin} = require("@codecov/webpack-plugin");
 const webpack = require('webpack');
 
 const isProd = process.env.NODE_ENV === 'production';
+const isRiscvHost = process.env.HOST_ARCH === 'riscv64';
 
 console.log(`Bundling in ${isProd ? 'production' : 'development'}...`);
 
@@ -20,7 +21,7 @@ const proxyConf = {
 const config = {
     entry: './src/app/index.tsx',
     // Native riscv64 Node/V8 has been unstable under webpack's default parallel work.
-    parallelism: 1,
+    ...(isRiscvHost ? {parallelism: 1} : {}),
     output: {
         filename: '[name].[contenthash].js',
         chunkFilename: '[name].[contenthash].chunk.js',
